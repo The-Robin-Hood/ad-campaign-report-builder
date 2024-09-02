@@ -15,14 +15,20 @@ import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { downloadMockCampaignJson } from "@/utils/generateMockData";
 import { ThemeSwitch } from "./ThemeSwitch";
+import { Switch } from "../common/switch";
+import { Label } from "../common/label";
+import { useContext } from "react";
+import { CustomizationContext } from "@/hooks/customization-provider";
 
 export default function Header({ session }: { session: Session }) {
+  const { customization, handleCustomization } =
+    useContext(CustomizationContext);
   const handleGenerateMockData = () => {
     const mockData = downloadMockCampaignJson();
     console.log(mockData);
   };
   return (
-    <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-10">
       <nav className="flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
           href="#"
@@ -33,7 +39,14 @@ export default function Header({ session }: { session: Session }) {
         </Link>
       </nav>
       <div className="flex w-full justify-end items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <ThemeSwitch />
+        <div className="flex items-center space-x-2">
+          <Label htmlFor="customization">Customization</Label>
+          <Switch
+            id="customization"
+            checked={customization}
+            onCheckedChange={handleCustomization}
+          />
+        </div>
         <DropdownMenu>
           <p>{session.user?.name}</p>
           <DropdownMenuTrigger asChild>
@@ -55,6 +68,7 @@ export default function Header({ session }: { session: Session }) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <ThemeSwitch />
       </div>
     </header>
   );

@@ -3,6 +3,9 @@ import ToasterContext from "@/components/common/toasterContext";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/components/common/theme-provider";
+import CustomizationProvider from "@/hooks/customization-provider";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 
 export default function RootLayout({
   children,
@@ -25,8 +28,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ToasterContext />
-            {children}
+            <CustomizationProvider>
+              <DndProvider backend={HTML5Backend}>
+                <ToasterContext />
+                {children}
+              </DndProvider>
+            </CustomizationProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>
