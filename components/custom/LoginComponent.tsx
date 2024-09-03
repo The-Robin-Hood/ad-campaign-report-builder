@@ -11,7 +11,7 @@ import {
 } from "@/components/common/card";
 import { Input } from "@/components/common/input";
 import { Label } from "@/components/common/label";
-import { Loader } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,10 @@ import toast from "react-hot-toast";
 export default function LoginComponent() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -66,7 +70,25 @@ export default function LoginComponent() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required />
+            <div className="relative">
+              <Input
+                id="password"
+                type={passwordVisible ? "text" : "password"}
+                placeholder="********"
+                required
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-3 top-3 text-gray-500 focus:outline-none"
+              >
+                {passwordVisible ? (
+                  <EyeOffIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-3">
