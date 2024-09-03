@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.4.2",
@@ -23,6 +24,7 @@
     "@radix-ui/react-toast": "^1.2.1",
     "@radix-ui/react-tooltip": "^1.1.2",
     "@types/bcrypt": "^5.0.2",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "chart.js": "^4.4.4",
