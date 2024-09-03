@@ -64,7 +64,7 @@ export function UploadCampaign() {
   const handleUpload = async () => {
     setUploading(true);
     try {
-      const response = await axios.post("/api/campaigns", campaignData);
+      await axios.post("/api/campaigns", campaignData);
       toast.success("Campaign uploaded successfully");
     } catch (error) {
       toast.error("Error uploading campaign");
@@ -72,6 +72,7 @@ export function UploadCampaign() {
     setUploading(false);
     setCampaignData([]);
     setOpen(false);
+    window.location.reload();
   };
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -108,7 +109,7 @@ export function UploadCampaign() {
                 </p>
               ) : (
                 <p className="text-gray-600 font-medium">
-                  Drag 'n' drop JSON files here, or click to select files
+                  Drag &apos;n&apos; drop JSON files here, or click to select files
                 </p>
               )}
             </div>

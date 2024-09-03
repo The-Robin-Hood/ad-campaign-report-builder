@@ -51,15 +51,20 @@ export function ExportCampaign({
         exportOverallCSV(currentCampaign);
       } else {
         if (customDate) {
-          exportCustomRangeCSV(
+          const result = exportCustomRangeCSV(
             currentCampaign,
             customDate.from!,
             customDate?.to ?? customDate.from!
           );
+          if (result.success) {
+            toast.success(result.message);
+            setOpen(false);
+          } else {
+            toast.error(result.message);
+          }
         }
       }
     } catch (e) {
-        console.log(e)
       toast.error("Error while generating CSV");
     }
     setGenerating(false);

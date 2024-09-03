@@ -44,34 +44,48 @@ export default function CampaignDashBoard({
   useEffect(() => {
     setCards([
       <MetricCard
+        key="impressions"
         title="Total Impressions"
         icon={Eye}
         value={overallMetrics.impressions}
         formatter={formatNumber}
       />,
       <MetricCard
+        key="clicks"
         title="Total Clicks"
         icon={MousePointerClick}
         value={overallMetrics.clicks}
         formatter={formatNumber}
       />,
       <MetricCard
+        key="cost"
         title="Total Spend"
         icon={DollarSign}
         value={overallMetrics.cost}
         formatter={formatCurrency}
       />,
       <MetricCard
+        key="conversions"
         title="Conversions"
         icon={ArrowUpRight}
         value={overallMetrics.conversions}
         formatter={formatNumber}
       />,
-      <DailyTrendChart campaign={selectedCampaign} />,
-      <DeviceBreakDownChart campaign={selectedCampaign} />,
-      <GeneralPerformanceCard overallMetrics={overallMetrics} />,
-      <DevicePerformanceCard overallMetrics={overallMetrics} />,
+      <DailyTrendChart key="dailyTrend" campaign={selectedCampaign} />,
+      <DeviceBreakDownChart
+        key="deviceBreakDown"
+        campaign={selectedCampaign}
+      />,
+      <GeneralPerformanceCard
+        key="generalPerformance"
+        overallMetrics={overallMetrics}
+      />,
+      <DevicePerformanceCard
+        key="devicePerformance"
+        overallMetrics={overallMetrics}
+      />,
     ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCampaign]);
 
   const moveCard = useCallback((fromIndex: number, toIndex: number) => {

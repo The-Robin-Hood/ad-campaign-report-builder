@@ -31,7 +31,7 @@ function jsonToCSV(campaigns: Campaign[]) {
     const mobileStats = deviceStats.mobile || {};
 
     const row = [
-    //   id,
+      //   id,
       name,
       startDate,
       endDate,
@@ -71,7 +71,7 @@ function getDailyMetricsInRange(
       const metricDate = new Date(dailyMetric.date);
       if (metricDate >= start && metricDate <= end) {
         dailyMetricsInRange.push({
-        //   id: item.id,
+          //   id: item.id,
           name: item.name,
           date: dailyMetric.date,
           impressions: dailyMetric.impressions,
@@ -125,6 +125,8 @@ export function exportCustomRangeCSV(
     startDate,
     endDate
   );
+  if (dailyMetricsInRange === "")
+    return { success: false, message: "No data found for the selected range" };
   const csvContent = "data:text/csv;charset=utf-8," + dailyMetricsInRange;
 
   const encodedUri = encodeURI(csvContent);
@@ -133,4 +135,8 @@ export function exportCustomRangeCSV(
   link.setAttribute("download", "campaigns.csv");
   document.body.appendChild(link);
   link.click();
+  return {
+    success: true,
+    message: "CSV exported successfully",
+  };
 }

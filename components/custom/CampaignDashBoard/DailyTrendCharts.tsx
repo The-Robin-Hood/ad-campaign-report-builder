@@ -1,22 +1,12 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis } from "recharts";
-
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/common/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/common/chart";
 import Campaign from "@/models/Campaign";
 import { useState } from "react";
 import {
@@ -27,27 +17,20 @@ import {
   SelectValue,
 } from "@/components/common/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/common/tabs";
-import { TabsContent } from "@radix-ui/react-tabs";
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig;
+import DynamicChart from "@/components/common/chart";
 
 type StatsType = "impressions" | "clicks" | "conversions" | "cost";
 
 export default function DailyTrendChart({ campaign }: { campaign: Campaign }) {
   const [timeRange, setTimeRange] = useState("30d");
   const [statsType, setStatsType] = useState<StatsType>("impressions");
-  const [chartType, setChartType] = useState("line");
+  const [chartType, setChartType] = useState("bar");
   const chartData = campaign.dailyMetrics.map((item) => {
     const date = item.date;
-    const statType = item[statsType];
+    const value = item[statsType];
     return {
       date,
-      [statsType]: statType,
+      value,
     };
   });
   const filteredData = chartData.filter((item) => {
@@ -63,6 +46,7 @@ export default function DailyTrendChart({ campaign }: { campaign: Campaign }) {
     now.setDate(now.getDate() - daysToSubtract);
     return date >= now;
   });
+  console.log(filteredData);
   return (
     <Card className="h-full">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
@@ -74,14 +58,14 @@ export default function DailyTrendChart({ campaign }: { campaign: Campaign }) {
         </div>
         <Tabs
           className="mr-2"
-          defaultValue="line"
+          defaultValue="bar"
           onValueChange={setChartType}
           value={chartType}
         >
           <div className="flex items-center justify-center h-full">
             <TabsList className="w-fit">
-              <TabsTrigger value="line">Line</TabsTrigger>
               <TabsTrigger value="bar">Bar</TabsTrigger>
+              <TabsTrigger value="line">Line</TabsTrigger>
             </TabsList>
           </div>
         </Tabs>
@@ -130,69 +114,22 @@ export default function DailyTrendChart({ campaign }: { campaign: Campaign }) {
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
-        >
-          {filteredData.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              No data available
-            </div>
-          ) : chartType === "line" ? (
-            <LineChart
-              accessibilityLayer
-              data={filteredData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="date"
-                tickLine={true}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  });
-                }}
-              />
-              <ChartTooltip cursor={true} content={<ChartTooltipContent />} />
-              <Line
-                dataKey={statsType}
-                type="linear"
-                stroke="var(--color-desktop)"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          ) : (
-            <BarChart accessibilityLayer data={filteredData}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  });
-                }}
-              />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <Bar dataKey={statsType} fill="var(--color-desktop)" radius={8} />
-            </BarChart>
-          )}
-        </ChartContainer>
+      <CardContent className="h-[300px]">
+        {filteredData.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            No data available
+          </div>
+        ) : chartType === "line" ? (
+          <DynamicChart
+            datasets={[{ data: filteredData, label: statsType }]}
+            chartType="line"
+          />
+        ) : (
+          <DynamicChart
+            datasets={[{ data: filteredData, label: statsType }]}
+            chartType="bar"
+          />
+        )}
       </CardContent>
     </Card>
   );
