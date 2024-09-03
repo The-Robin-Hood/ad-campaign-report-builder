@@ -41,11 +41,9 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-hot-toast": "^2.4.1",
-    "recharts": "^2.12.7",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0",
-    "uuidv4": "^6.2.13",
     "vaul": "^0.9.1"
   },
   "devDependencies": {
