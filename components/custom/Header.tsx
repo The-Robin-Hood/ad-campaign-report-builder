@@ -1,7 +1,6 @@
 "use client";
 import { Megaphone, Search, CircleUser } from "lucide-react";
 import { Button } from "../common/button";
-import { Input } from "../common/input";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -28,7 +27,7 @@ export default function Header({ session }: { session: Session }) {
     console.log(mockData);
   };
   return (
-    <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-10">
+    <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-30">
       <nav className="flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
           href="#"
@@ -61,7 +60,6 @@ export default function Header({ session }: { session: Session }) {
             <DropdownMenuItem onClick={handleGenerateMockData}>
               Generate Mock Data
             </DropdownMenuItem>
-            <DropdownMenuItem>Upload</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
               Logout

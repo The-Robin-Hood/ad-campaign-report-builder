@@ -65,7 +65,6 @@ export function UploadCampaign() {
     setUploading(true);
     try {
       const response = await axios.post("/api/campaigns", campaignData);
-      console.log(response);
       toast.success("Campaign uploaded successfully");
     } catch (error) {
       toast.error("Error uploading campaign");

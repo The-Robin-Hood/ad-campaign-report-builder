@@ -15,7 +15,7 @@ export default function DevicePerformanceCard({
   overallMetrics: OverallMetrics;
 }) {
   return (
-    <Card className="col-span-3">
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Device Performance</CardTitle>
         <CardDescription>Clicks and conversions by device</CardDescription>

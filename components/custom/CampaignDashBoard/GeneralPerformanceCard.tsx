@@ -26,7 +26,7 @@ export default function GeneralPerformanceCard({
   };
 
   return (
-    <Card className="col-span-3">
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Performance Metrics</CardTitle>
       </CardHeader>

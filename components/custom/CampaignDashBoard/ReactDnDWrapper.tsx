@@ -1,81 +1,72 @@
-// DnDWrapper.tsx
-import React, { ReactNode } from "react";
-import { useDrag, useDrop, DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { cn } from "@/utils/cn";
+import { GripVertical } from "lucide-react";
+import { useRef } from "react";
+import { useDrag, useDrop } from "react-dnd";
 
-const DND_ITEM_TYPE = "DND_ITEM";
+export default function ReactDnDWrapper({
+  id,
+  index,
+  element,
+  swapCard,
+  customization,
+  className,
+}: {
+  id: string;
+  index: number;
+  element: React.ReactNode;
+  swapCard: (fromIndex: number, toIndex: number) => void;
+  customization: boolean;
+  className?: string;
+}) {
+  const ref = useRef(null);
 
-interface DraggableItemProps {
-  children: ReactNode;
-}
-
-interface DroppableAreaProps {
-  children: ReactNode;
-  onDrop: (item: Element) => void;
-}
-
-interface DnDWrapperProps {
-  children: ReactNode;
-  onDrop: (item: Element) => void;
-}
-
-const DraggableItem: React.FC<DraggableItemProps> = ({ children }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: DND_ITEM_TYPE,
+  // Define drag behavior
+  const [{ isDragging }, drag] = useDrag({
+    canDrag: customization,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }));
+    type: "CARD",
+    item: { id, index },
+  });
 
-  return (
-    <div
-      ref={drag}
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-        cursor: "move",
-      }}
-    >
-      {children}
-    </div>
-  );
-};
-
-const DroppableArea: React.FC<DroppableAreaProps> = ({ onDrop, children }) => {
-  const [{ isOver }, dropRef] = useDrop({
-    accept: DND_ITEM_TYPE,
-    drop: (item) => {
-      console.log(item);
-      onDrop(item);
+  // Define drop behavior
+  const [{ isOver, canDrop }, drop] = useDrop({
+    accept: "CARD",
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      isAllowed: monitor.canDrop(),
+      canDrop: monitor.canDrop(),
+    }),
+    canDrop(item, monitor) {
+      return customization && item.id === id;
     },
-    collect(monitor) {
-      return {
-        isOver: monitor.isOver(),
-      };
+    drop: (item: { id: string; index: number }) => {
+      if (item.index !== index && item.id === id) {
+        swapCard(item.index, index);
+      }
     },
   });
 
+  drag(drop(ref));
   return (
     <div
-      ref={dropRef}
-      style={{
-        padding: "16px",
-        border: "2px dashed gray",
-        minHeight: "100px",
-      }}
+      ref={ref}
+      className={cn(
+        isDragging && "opacity-10",
+        isOver &&
+          (canDrop
+            ? "border border-dashed border-white"
+            : "border border-dashed border-red-500"),
+        customization && !isOver && "cursor-move animate-wiggle",
+        "transition-all ease-in-out h-full",
+        className
+      )}
     >
-      {children}
+      {customization && (
+        <GripVertical className="h-4 w-4 text-white absolute right-2 top-2" />
+      )}
+      {element}
     </div>
   );
-};
-
-const DnDWrapper: React.FC<DnDWrapperProps> = ({ children, onDrop }) => {
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <DroppableArea onDrop={onDrop}>
-        <DraggableItem>{children}</DraggableItem>
-      </DroppableArea>
-    </DndProvider>
-  );
-};
-
-export default DnDWrapper;
+}

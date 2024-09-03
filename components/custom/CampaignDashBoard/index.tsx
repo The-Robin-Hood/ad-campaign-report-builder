@@ -1,7 +1,7 @@
 "use client";
 
 import Campaign from "@/models/Campaign";
-import { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "@/components/common/button";
 import { ArrowUpRight, DollarSign, MousePointerClick, Eye } from "lucide-react";
 import { DeviceBreakDownChart } from "./DeviceBreakDownCharts";
@@ -21,6 +21,8 @@ import { Label } from "@/components/common/label";
 import DnDWrapper from "./ReactDnDWrapper";
 import { CustomizationContext } from "@/hooks/customization-provider";
 import { cn } from "@/utils/cn";
+import { UploadCampaign } from "../UploadCampaign";
+import { ExportCampaign } from "../ExportCampaign";
 
 export default function CampaignDashBoard({
   campaigns,
@@ -37,36 +39,40 @@ export default function CampaignDashBoard({
     }
   };
 
-  const [cards, setCards] = useState([
-    {
-      id: 1,
-      title: "Total Impressions",
-      icon: Eye,
-      value: overallMetrics.impressions,
-      formatter: formatNumber,
-    },
-    {
-      id: 2,
-      title: "Total Clicks",
-      icon: MousePointerClick,
-      value: overallMetrics.clicks,
-      formatter: formatNumber,
-    },
-    {
-      id: 3,
-      title: "Total Spend",
-      icon: DollarSign,
-      value: overallMetrics.cost,
-      formatter: formatCurrency,
-    },
-    {
-      id: 4,
-      title: "Conversions",
-      icon: ArrowUpRight,
-      value: overallMetrics.conversions,
-      formatter: formatNumber,
-    },
-  ]);
+  const [metricCards, setCards] = useState<React.ReactNode[]>([]);
+
+  useEffect(() => {
+    setCards([
+      <MetricCard
+        title="Total Impressions"
+        icon={Eye}
+        value={overallMetrics.impressions}
+        formatter={formatNumber}
+      />,
+      <MetricCard
+        title="Total Clicks"
+        icon={MousePointerClick}
+        value={overallMetrics.clicks}
+        formatter={formatNumber}
+      />,
+      <MetricCard
+        title="Total Spend"
+        icon={DollarSign}
+        value={overallMetrics.cost}
+        formatter={formatCurrency}
+      />,
+      <MetricCard
+        title="Conversions"
+        icon={ArrowUpRight}
+        value={overallMetrics.conversions}
+        formatter={formatNumber}
+      />,
+      <DailyTrendChart campaign={selectedCampaign} />,
+      <DeviceBreakDownChart campaign={selectedCampaign} />,
+      <GeneralPerformanceCard overallMetrics={overallMetrics} />,
+      <DevicePerformanceCard overallMetrics={overallMetrics} />,
+    ]);
+  }, [selectedCampaign]);
 
   const moveCard = useCallback((fromIndex: number, toIndex: number) => {
     setCards((prevCards) => {
@@ -74,24 +80,28 @@ export default function CampaignDashBoard({
       [updatedCards[fromIndex], updatedCards[toIndex]] = [
         updatedCards[toIndex],
         updatedCards[fromIndex],
-      ]; // Swap the cards
+      ];
       return updatedCards;
     });
   }, []);
 
   return (
-    <div className="flex-col md:flex">
+    <div className="flex-col md:flex relative">
+      <div
+        className={cn({
+          "absolute w-full h-full bg-black/75 z-10 transition-all duration-500 ease-in-out":
+            customization,
+          none: !customization,
+        })}
+      ></div>
       <div className="flex-1 space-y-4 p-8 pt-6 relative">
         <div className="flex items-center justify-between space-y-2">
           <div className="flex flex-col gap-3">
             <h2 className="text-3xl font-bold tracking-tight">
               Campaign Dashboard 🚀
             </h2>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center gap-3">
-              <Label>Selected Campaign : </Label>
+            <div className="flex items-center justify-start gap-3">
+              <Label className="whitespace-nowrap">Selected Campaign : </Label>
               <Select
                 value={selectedCampaign.id}
                 onValueChange={handleCampaignChange}
@@ -111,37 +121,52 @@ export default function CampaignDashBoard({
                 </SelectContent>
               </Select>
             </div>
-            <Button>Export CSV</Button>
+          </div>
+
+          <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-2 gap-3">
+            <UploadCampaign />
+            <ExportCampaign
+              campaigns={campaigns}
+              selectedCampaign={selectedCampaign}
+            />
           </div>
         </div>
         <div
           className={cn(
             "space-y-4 transition-all ease-in-out duration-300 transform",
-            customization && "bg-black/75 scale-95 -translate-y-4"
+            customization && "scale-95 -translate-y-4 z-20 sticky"
           )}
         >
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {cards.map((card, index) => (
-              <MetricCard
-                key={card.id}
-                id={card.id}
-                index={index}
-                title={card.title}
-                icon={card.icon}
-                value={card.value}
-                formatter={card.formatter}
-                moveCard={moveCard}
-                customization={customization}
-              />
-            ))}
+            {metricCards.map(
+              (card, index) =>
+                index < 4 && (
+                  <DnDWrapper
+                    id={"topElements"}
+                    key={index}
+                    index={index}
+                    element={card}
+                    swapCard={moveCard}
+                    customization={customization}
+                  />
+                )
+            )}
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-            <DailyTrendChart campaign={selectedCampaign} />
-            <DeviceBreakDownChart campaign={selectedCampaign} />
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-            <GeneralPerformanceCard overallMetrics={overallMetrics} />
-            <DevicePerformanceCard overallMetrics={overallMetrics} />
+            {metricCards.map(
+              (card, index) =>
+                index > 3 && (
+                  <DnDWrapper
+                    id={"bottomElements"}
+                    key={index}
+                    index={index}
+                    element={card}
+                    swapCard={moveCard}
+                    customization={customization}
+                    className="col-span-3"
+                  />
+                )
+            )}
           </div>
         </div>
       </div>

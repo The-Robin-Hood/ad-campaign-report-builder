@@ -46,7 +46,6 @@ const isValidOverallMetrics = (metrics: any): metrics is OverallMetrics => {
 };
 
 const isValidCampaign = (campaign: any): campaign is Campaign => {
-console.log(campaign.startDate,campaign.endDate);
   return (
     typeof campaign === "object" &&
     typeof campaign.id === "string" &&

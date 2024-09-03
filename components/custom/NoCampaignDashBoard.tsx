@@ -2,8 +2,6 @@
 import Image from "next/image";
 import { Button } from "../common/button";
 import * as React from "react";
-import { Minus, Plus } from "lucide-react";
-import { Bar, BarChart, ResponsiveContainer } from "recharts";
 import { UploadCampaign } from "./UploadCampaign";
 import { downloadMockCampaignJson } from "@/utils/generateMockData";
 
