@@ -1,5 +1,7 @@
 # Ad Campaign Manager
 
+[DEMO Link](https://ad-campaign-manager.vercel.app)
+
 ## Description
 
 This project is a web application that showcases the sample ad manager dashboard reports with a drag-and-drop interface. It's built using Next.js and Tailwind CSS, with features like drag-and-drop metrics, visualization options, drill-down functionality, filtering capabilities, and data source integration.
